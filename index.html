@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cloud File Storage System</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f6f8;
+      padding: 40px;
+    }
+    .box {
+      background: white;
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+      border-radius: 8px;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+    }
+    ul {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Cloud-Based File Storage</h2>
+
+  <input type="text" id="fileName" placeholder="File Name">
+  <input type="text" id="fileType" placeholder="File Type (PDF / Image)">
+  <input type="text" id="fileLink" placeholder="File Link (Google Drive)">
+  <button onclick="saveFile()">Save File</button>
+
+  <ul id="fileList"></ul>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyALPAc3KbE2YXziZ0fi1CEC9p2Skv2mZb0",
+    authDomain: "chat-app-bf824.firebaseapp.com",
+    projectId: "chat-app-bf824"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  function saveFile() {
+    const name = document.getElementById("fileName").value;
+    const type = document.getElementById("fileType").value;
+    const link = document.getElementById("fileLink").value;
+
+    db.collection("files").add({
+      fileName: name,
+      fileType: type,
+      fileLink: link,
+      uploadedBy: "Dharshika S",
+      time: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    alert("File saved to cloud database");
+  }
+
+  db.collection("files").onSnapshot(snapshot => {
+    const list = document.getElementById("fileList");
+    list.innerHTML = "";
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const li = document.createElement("li");
+      li.innerHTML = `<a href="${data.fileLink}" target="_blank">${data.fileName}</a>`;
+      list.appendChild(li);
+    });
+  });
+</script>
+
+</body>
+</html>
